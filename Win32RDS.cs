@@ -4,11 +4,12 @@
  * github.com/suglasp
  * 
  * Windows API RDS definitions
+ * Re-used class from other .NET Project utility.
  * 
  * Initial creation date: 01-02-2014
- * Change Date: 26-01-2017 (updated header comments on 12/10/2021)
+ * Change Date: 16-02-2023
  * 
- * Re-used class from other .NET Project utility.
+ * Fixed a bug on 16-02-2023 when the class is used in .NET 4.0 Framework or higher on x86-64.
  * 
  */
 
@@ -411,7 +412,11 @@ namespace MyAPIBinding.Win32
             int count = 0;
             int retval = WTSEnumerateSessions(server, 0, 1, ref buffer, ref count);
             int dataSize = Marshal.SizeOf(typeof(WTS_SESSION_INFO));
+#if WIN32
             Int64 current = (int)buffer;
+#else
+            Int64 current = (long)buffer;    // in .NET 4.0+ on x86-64, casting a pointer to Int fails because of a checked in .NET Framework https://stackoverflow.com/questions/46364191/casting-intptr-to-int-only-works-sometimes
+#endif
 
             if (retval != 0)
             {
@@ -439,7 +444,11 @@ namespace MyAPIBinding.Win32
             int count = 0;
             int retval = WTSEnumerateSessions(server, 0, 1, ref buffer, ref count);
             int dataSize = Marshal.SizeOf(typeof(WTS_SESSION_INFO));
+#if WIN32
             Int64 current = (int)buffer;
+#else
+            Int64 current = (long)buffer;    // in .NET 4.0+ on x86-64, casting a pointer to Int fails because of a checked in .NET Framework https://stackoverflow.com/questions/46364191/casting-intptr-to-int-only-works-sometimes
+#endif
 
             if (retval != 0)
             {
